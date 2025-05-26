@@ -165,7 +165,6 @@ class NoteHome extends StatelessWidget {
                       crossAxisSpacing: 14.w,
                       mainAxisSpacing: 14.h,
                       childAspectRatio: 0.85,
-                      
                     ),
                     itemBuilder: (ctx, i) => _buildNoteCard(ctx, i),
                   );

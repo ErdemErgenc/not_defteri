@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:note_project1/note_home/note_home.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:note_project1/pages/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Note App',
 
-          home: NoteHome(),
+          home: SplashPage(),
         );
       },
     );
