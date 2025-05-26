@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   final List<Color> cardColors = [
+    Color(0xFFDAB49D), // Warm beigea
     Color(0xFFFAE3B4), // Vintage cream
     Color(0xFFD9CAB3), // Old paper
     Color(0xFFB5B682), // Olive green
