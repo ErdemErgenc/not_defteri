@@ -10,6 +10,7 @@ class NoteHome extends StatelessWidget {
   final NoteController controller = Get.put(NoteController());
   final TextEditingController _controller = TextEditingController();
   final AppColors appColors = AppColors();
+  final RxBool isGrid = false.obs; // Görünüm tipi
 
   NoteHome({super.key});
 
@@ -29,6 +30,18 @@ class NoteHome extends StatelessWidget {
         backgroundColor: const Color(0xFFDAB49D),
         elevation: 2,
         centerTitle: true,
+        actions: [
+          Obx(
+            () => IconButton(
+              icon: Icon(
+                isGrid.value ? Icons.view_list : Icons.grid_view_rounded,
+                color: const Color(0xFF5E503F),
+              ),
+              tooltip: "Görünümü Değiştir",
+              onPressed: () => isGrid.value = !isGrid.value,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -86,11 +99,25 @@ class NoteHome extends StatelessWidget {
                     ),
                   );
                 }
-
-                return ListView.builder(
-                  itemCount: controller.items.length,
-                  itemBuilder: (ctx, i) => _buildNoteCard(ctx, i),
-                );
+                // Görünüme göre widget seç
+                if (isGrid.value) {
+                  return GridView.builder(
+                    itemCount: controller.items.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 1.1,
+                        ),
+                    itemBuilder: (ctx, i) => _buildNoteCard(ctx, i),
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount: controller.items.length,
+                    itemBuilder: (ctx, i) => _buildNoteCard(ctx, i),
+                  );
+                }
               }),
             ),
           ],
