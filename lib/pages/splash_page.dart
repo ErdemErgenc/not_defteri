@@ -111,15 +111,21 @@ class _SplashPageState extends State<SplashPage>
               ),
             ),
             SizedBox(height: 32.h),
-            Text(
-              "Not Defterinize Hoşgeldiniz",
-              style: GoogleFonts.robotoSlab(
-                fontSize: 26.sp,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF5E503F),
-                letterSpacing: 1.2,
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Opacity(opacity: _opacityAnimation.value, child: child);
+              },
+              child: Text(
+                "Not Defterinize Hoşgeldiniz",
+                style: GoogleFonts.robotoSlab(
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF5E503F),
+                  letterSpacing: 1.2,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),
