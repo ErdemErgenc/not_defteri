@@ -48,7 +48,11 @@ class NoteHome extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.delete_sweep, color: Colors.red, size: 32.sp),
+            icon: Icon(
+              Icons.delete_sweep,
+              color: const Color.fromARGB(255, 230, 0, 0),
+              size: 32.sp,
+            ),
             tooltip: "Tümünü Sil",
             onPressed: () {
               if (controller.items.isNotEmpty) {

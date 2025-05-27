@@ -42,7 +42,11 @@ class TrashPage extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_forever, color: Color(0xFF5E503F)),
+            icon: Icon(
+              size: 32.sp,
+              Icons.delete_forever,
+              color: const Color.fromARGB(255, 230, 0, 0), // Kırmızı renk
+            ),
             tooltip: "Tümünü Kalıcı Sil",
             onPressed: () {
               if (controller.trash.isNotEmpty) {
@@ -128,7 +132,7 @@ class TrashPage extends StatelessWidget {
     final color =
         appColors.cardColors[(note.colorIndex ?? 0) %
             appColors.cardColors.length];
- // EKLE
+    // EKLE
 
     if (isGrid) {
       return Container(
