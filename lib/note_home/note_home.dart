@@ -6,6 +6,10 @@ import 'package:note_project1/controller/note_controller.dart';
 import 'package:note_project1/pages/trash_page.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_project1/widgets/clear_notes_dialog.dart';
+import 'package:note_project1/widgets/delete_note_dialog.dart';
+import 'package:note_project1/widgets/note_card.dart';
+import 'package:note_project1/widgets/update_note_dialog.dart';
 
 class NoteHome extends StatelessWidget {
   final NoteController controller = Get.put(NoteController());
@@ -50,49 +54,7 @@ class NoteHome extends StatelessWidget {
               if (controller.items.isNotEmpty) {
                 showDialog(
                   context: context,
-                  builder:
-                      (_) => AlertDialog(
-                        backgroundColor: const Color(0xFFF0EAD2),
-                        title: Text(
-                          "Tüm Notları Sil",
-                          style: TextStyle(fontSize: 18.sp),
-                        ),
-                        content: Text(
-                          "Tüm notları silmek istediğinize emin misiniz?",
-                          style: TextStyle(fontSize: 15.sp),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              "Vazgeç",
-                              style: TextStyle(
-                                color: Colors.brown,
-                                fontSize: 15.sp,
-                              ),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              controller.clearItems();
-                              Navigator.pop(context);
-                              Get.snackbar(
-                                "Tüm Notlar Silindi",
-                                "Tüm notlar kaldırıldı",
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: Text(
-                              "Evet",
-                              style: TextStyle(fontSize: 15.sp),
-                            ),
-                          ),
-                        ],
-                      ),
+                  builder: (_) => ClearNotesDialog(controller: controller),
                 );
               }
             },
@@ -107,7 +69,7 @@ class NoteHome extends StatelessWidget {
               controller: _controller,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: "İlk notunuzu buraya yazın...",
+                hintText: "Notunuzu buraya yazın...",
                 hintStyle: GoogleFonts.robotoMono(
                   color: Colors.brown[300],
                   fontStyle: FontStyle.italic,
@@ -198,253 +160,25 @@ class NoteHome extends StatelessWidget {
   }
 
   Widget _buildNoteCard(BuildContext context, int index) {
-    final note = controller.items[index];
-    final color = appColors.cardColors[index % appColors.cardColors.length];
-
-    // Grid görünümünde farklı, list görünümünde farklı widget döndür
-    if (isGrid.value) {
-      return Dismissible(
-        key: Key(note.text + index.toString()),
-        direction: DismissDirection.endToStart,
-        onDismissed: (direction) {
-          controller.removeItem(index);
-          Get.snackbar(
-            "Not Silindi",
-            "Not kaldırıldı",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        },
-        background: Container(
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          decoration: BoxDecoration(
-            color: Colors.redAccent,
-            borderRadius: BorderRadius.circular(15.r),
-          ),
-          alignment: Alignment.centerRight,
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Icon(Icons.delete, color: Colors.white, size: 26.sp),
-        ),
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(15.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.brown.withOpacity(0.08),
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    note.text,
-                    style: GoogleFonts.cabin(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.brown[800],
-                    ),
-                    maxLines: 5,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
-                style: GoogleFonts.robotoMono(
-                  fontSize: 12.sp,
-                  color: Colors.brown[400],
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 6.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Colors.black54, size: 20.sp),
-                    onPressed: () => _showUpdateDialog(context, index),
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    splashRadius: 18.r,
-                  ),
-                  SizedBox(width: 4.w),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
-                    onPressed: () => _showDeleteDialog(context, index),
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    splashRadius: 18.r,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    } else {
-      // Liste görünümü (ListTile ile)
-      return Dismissible(
-        key: Key(note.text + index.toString()),
-        direction: DismissDirection.endToStart,
-        onDismissed: (direction) {
-          controller.removeItem(index);
-          Get.snackbar(
-            "Not Silindi",
-            "Not kaldırıldı",
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        },
-        background: Container(
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          decoration: BoxDecoration(
-            color: Colors.redAccent,
-            borderRadius: BorderRadius.circular(15.r),
-          ),
-          alignment: Alignment.centerRight,
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Icon(Icons.delete, color: Colors.white, size: 26.sp),
-        ),
-        child: Card(
-          color: color,
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.r),
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(16.w),
-            title: Text(
-              note.text,
-              style: GoogleFonts.cabin(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.brown[800],
-              ),
-            ),
-            subtitle: Padding(
-              padding: EdgeInsets.only(top: 8.h),
-              child: Text(
-                DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
-                style: GoogleFonts.robotoMono(
-                  fontSize: 13.sp,
-                  color: Colors.brown[400],
-                ),
-              ),
-            ),
-            trailing: Wrap(
-              spacing: 8.w,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.black54, size: 22.sp),
-                  onPressed: () => _showUpdateDialog(context, index),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
-                  onPressed: () => _showDeleteDialog(context, index),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
+    return NoteCard(
+      index: index,
+      isGrid: isGrid.value,
+      onEdit: () => _showUpdateDialog(context, index),
+      onDelete: () => _showDeleteDialog(context, index),
+    );
   }
 
   void _showUpdateDialog(BuildContext context, int index) {
-    final editCtrl = TextEditingController(text: controller.items[index].text);
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: const Color(0xFFF0EAD2),
-            title: Text(
-              "Edit Note",
-              style: GoogleFonts.robotoSlab(fontSize: 18.sp),
-            ),
-            content: TextField(
-              controller: editCtrl,
-              maxLines: 3,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white70,
-                hintText: "Update your thought...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              style: GoogleFonts.robotoMono(fontSize: 15.sp),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("Cancel", style: TextStyle(fontSize: 15.sp)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final newText = editCtrl.text.trim();
-                  if (newText.isNotEmpty) {
-                    controller.updateItem(index, newText);
-                    Navigator.pop(context);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text("Save", style: TextStyle(fontSize: 15.sp)),
-              ),
-            ],
-          ),
+      builder: (_) => UpdateNoteDialog(index: index, controller: controller),
     );
   }
 
   void _showDeleteDialog(BuildContext context, int index) {
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            backgroundColor: const Color(0xFFF0EAD2),
-            title: Text("Notu Sil", style: TextStyle(fontSize: 18.sp)),
-            content: Text(
-              "Bu notu silmek istediğinize emin misiniz?",
-              style: TextStyle(fontSize: 15.sp),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "Vazgeç",
-                  style: TextStyle(color: Colors.brown, fontSize: 15.sp),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  controller.removeItem(index);
-                  Navigator.pop(context);
-                  Get.snackbar(
-                    "Silindi",
-                    "Not silindi",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text("Evet", style: TextStyle(fontSize: 15.sp)),
-              ),
-            ],
-          ),
+      builder: (_) => DeleteNoteDialog(index: index, controller: controller),
     );
   }
 }

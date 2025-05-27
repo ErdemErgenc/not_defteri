@@ -4,10 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:note_project1/controller/note_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:note_project1/colors/colors.dart'; // Eklemeyi unutma!
 
 class TrashPage extends StatelessWidget {
   final NoteController controller = Get.find<NoteController>();
   final RxBool isGrid = false.obs;
+  final AppColors appColors = AppColors(); // EKLE
 
   TrashPage({super.key});
 
@@ -43,12 +45,44 @@ class TrashPage extends StatelessWidget {
             icon: const Icon(Icons.delete_forever, color: Color(0xFF5E503F)),
             tooltip: "Tümünü Kalıcı Sil",
             onPressed: () {
-              controller.clearTrash();
-              Get.snackbar(
-                "Çöp Kutusu",
-                "Tüm notlar kalıcı olarak silindi",
-                snackPosition: SnackPosition.BOTTOM,
-              );
+              if (controller.trash.isNotEmpty) {
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        backgroundColor: const Color(0xFFF0EAD2),
+                        title: const Text("Çöp Kutusunu Temizle"),
+                        content: const Text(
+                          "Tüm notları kalıcı olarak silmek istediğinize emin misiniz?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              "Vazgeç",
+                              style: TextStyle(color: Colors.brown),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              controller.clearTrash();
+                              Navigator.pop(context);
+                              Get.snackbar(
+                                "Çöp Kutusu",
+                                "Tüm notlar kalıcı olarak silindi",
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text("Evet"),
+                          ),
+                        ],
+                      ),
+                );
+              }
             },
           ),
         ],
@@ -91,13 +125,15 @@ class TrashPage extends StatelessWidget {
 
   Widget _buildTrashCard(BuildContext context, int index, bool isGrid) {
     final note = controller.trash[index];
+    final color =
+        appColors.cardColors[index % appColors.cardColors.length]; // EKLE
 
     if (isGrid) {
       return Container(
         margin: EdgeInsets.symmetric(vertical: 8.h),
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: const Color(0xFFF0EAD2),
+          color: color, // Burada kullan
           borderRadius: BorderRadius.circular(15.r),
           boxShadow: [
             BoxShadow(
@@ -129,7 +165,7 @@ class TrashPage extends StatelessWidget {
               DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
               style: GoogleFonts.robotoMono(
                 fontSize: 12.sp,
-                color: Colors.brown[400],
+                color: Color(0xFF7D7461),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -170,7 +206,7 @@ class TrashPage extends StatelessWidget {
     } else {
       // Liste görünümü
       return Card(
-        color: const Color(0xFFF0EAD2),
+        color: color, // Burada kullan
         margin: EdgeInsets.symmetric(vertical: 8.h),
         elevation: 3,
         shape: RoundedRectangleBorder(
@@ -182,8 +218,8 @@ class TrashPage extends StatelessWidget {
             note.text,
             style: GoogleFonts.cabin(
               fontSize: 16.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.brown[800],
+              color: Color(0xFF7D7461),
+              fontWeight: FontWeight.w900,
             ),
           ),
           subtitle: Padding(
@@ -192,7 +228,8 @@ class TrashPage extends StatelessWidget {
               DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
               style: GoogleFonts.robotoMono(
                 fontSize: 13.sp,
-                color: Colors.brown[400],
+                color: Color(0xFF7D7461),
+                fontWeight: FontWeight.w900,
               ),
             ),
           ),

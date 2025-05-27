@@ -58,4 +58,9 @@ class NoteController extends GetxController {
   void deleteFromTrash(int index) => trash.removeAt(index);
 
   void clearTrash() => trash.clear();
+
+  void moveAllToTrash() {
+    trash.addAll(items);
+    items.clear();
+  }
 }
