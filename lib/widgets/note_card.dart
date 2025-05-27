@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_project1/widgets/update_note_dialog.dart';
 import '../controller/note_controller.dart';
 import '../colors/colors.dart';
 
@@ -40,80 +41,92 @@ class NoteCard extends StatelessWidget {
         direction: DismissDirection.endToStart,
         onDismissed: (direction) => onDelete(),
         background: _buildDismissBackground(),
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(15.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.brown.withOpacity(0.08),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+        child: InkWell(
+          onDoubleTap:
+              () => Get.to(
+                UpdateNoteDialog(index: index, controller: controller),
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    note.text,
-                    style: GoogleFonts.cabin(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.brown[800],
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 8.h),
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(15.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.brown.withOpacity(0.5),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      note.text,
+                      style: GoogleFonts.cabin(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.brown[800],
+                      ),
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 5,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                dateText,
-                style: GoogleFonts.robotoMono(
-                  fontSize: 12.sp,
-                  color: Color(0xFF7D7461),
-                  fontWeight: FontWeight.w900,
+                SizedBox(height: 8.h),
+                Text(
+                  dateText,
+                  style: GoogleFonts.robotoMono(
+                    fontSize: 12.sp,
+                    color: Color(0xFF7D7461),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ),
-              SizedBox(height: 6.h),
+                SizedBox(height: 6.h),
 
-              IconButton(
-                icon: Icon(
-                  Icons.color_lens,
-                  color: Colors.black54,
-                  size: 20.sp,
-                ),
-                onPressed: () {
-                  showColorGridMenu(context, index);
-                },
-              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.color_lens,
+                        color: Colors.black54,
+                        size: 20.sp,
+                      ),
+                      onPressed: () {
+                        showColorGridMenu(context, index);
+                      },
+                    ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Colors.black54, size: 20.sp),
-                    onPressed: onEdit,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    splashRadius: 18.r,
-                  ),
-                  SizedBox(width: 4.w),
-                  IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
-                    onPressed: onDelete,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    splashRadius: 18.r,
-                  ),
-                ],
-              ),
-            ],
+                    SizedBox(width: 4.w),
+
+                    IconButton(
+                      icon: Icon(
+                        Icons.edit,
+                        color: Colors.black54,
+                        size: 20.sp,
+                      ),
+                      onPressed: onEdit,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 18.r,
+                    ),
+                    SizedBox(width: 4.w),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
+                      onPressed: onDelete,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 18.r,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -123,56 +136,62 @@ class NoteCard extends StatelessWidget {
         direction: DismissDirection.endToStart,
         onDismissed: (direction) => onDelete(),
         background: _buildDismissBackground(),
-        child: Card(
-          color: color,
-          margin: EdgeInsets.symmetric(vertical: 8.h),
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.r),
-          ),
-          child: ListTile(
-            contentPadding: EdgeInsets.all(16.w),
-            title: Text(
-              note.text,
-              style: GoogleFonts.cabin(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.brown[800],
+        child: InkWell(
+          onDoubleTap:
+              () => Get.to(
+                UpdateNoteDialog(index: index, controller: controller),
               ),
+          child: Card(
+            color: color,
+            margin: EdgeInsets.symmetric(vertical: 8.h),
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.r),
             ),
-            subtitle: Padding(
-              padding: EdgeInsets.only(top: 8.h),
-              child: Text(
-                dateText,
-                style: GoogleFonts.robotoMono(
-                  fontSize: 13.sp,
-                  color: Color(0xFF7D7461),
-                  fontWeight: FontWeight.w900,
+            child: ListTile(
+              contentPadding: EdgeInsets.all(16.w),
+              title: Text(
+                note.text,
+                style: GoogleFonts.cabin(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.brown[800],
                 ),
               ),
-            ),
-            trailing: Wrap(
-              spacing: 8.w,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.color_lens,
-                    color: Colors.black54,
-                    size: 20.sp,
+              subtitle: Padding(
+                padding: EdgeInsets.only(top: 8.h),
+                child: Text(
+                  dateText,
+                  style: GoogleFonts.robotoMono(
+                    fontSize: 13.sp,
+                    color: Color(0xFF7D7461),
+                    fontWeight: FontWeight.w900,
                   ),
-                  onPressed: () {
-                    showColorGridMenu(context, index);
-                  },
                 ),
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.black54, size: 22.sp),
-                  onPressed: onEdit,
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
-                  onPressed: onDelete,
-                ),
-              ],
+              ),
+              trailing: Wrap(
+                spacing: 8.w,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.color_lens,
+                      color: Colors.black54,
+                      size: 20.sp,
+                    ),
+                    onPressed: () {
+                      showColorGridMenu(context, index);
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.black54, size: 22.sp),
+                    onPressed: onEdit,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
+                    onPressed: onDelete,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -235,5 +254,4 @@ class NoteCard extends StatelessWidget {
       },
     );
   }
-
 }
