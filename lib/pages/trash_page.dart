@@ -126,7 +126,9 @@ class TrashPage extends StatelessWidget {
   Widget _buildTrashCard(BuildContext context, int index, bool isGrid) {
     final note = controller.trash[index];
     final color =
-        appColors.cardColors[index % appColors.cardColors.length]; // EKLE
+        appColors.cardColors[(note.colorIndex ?? 0) %
+            appColors.cardColors.length];
+ // EKLE
 
     if (isGrid) {
       return Container(

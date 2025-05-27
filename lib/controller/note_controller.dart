@@ -34,8 +34,12 @@ class NoteController extends GetxController {
     );
   }
 
-  void addItem(String item) =>
-      items.add(NoteItem(text: item, date: DateTime.now()));
+  void addItem(String item, {int colorIndex = 0}) {
+    items.add(
+      NoteItem(text: item, date: DateTime.now(), colorIndex: colorIndex),
+    );
+  }
+
 
   void removeItem(int index) {
     trash.add(items[index]);
@@ -44,9 +48,14 @@ class NoteController extends GetxController {
 
   void clearItems() => items.clear();
 
-  void updateItem(int index, String newItem) {
+  void updateItem(int index, String newItem, [int? newColorIndex]) {
     if (index >= 0 && index < items.length) {
-      items[index] = NoteItem(text: newItem, date: DateTime.now());
+      final oldNote = items[index];
+      items[index] = NoteItem(
+        text: newItem,
+        date: DateTime.now(),
+        colorIndex: newColorIndex ?? oldNote.colorIndex,
+      );
     }
   }
 
@@ -63,4 +72,16 @@ class NoteController extends GetxController {
     trash.addAll(items);
     items.clear();
   }
+
+  void updateItemColor(int index, int colorIndex) {
+    if (index >= 0 && index < items.length) {
+      final oldNote = items[index];
+      items[index] = NoteItem(
+        text: oldNote.text,
+        date: oldNote.date,
+        colorIndex: colorIndex,
+      );
+    }
+  }
+
 }

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_project1/colors/colors.dart';
 import '../controller/note_controller.dart';
 
-class UpdateNoteDialog extends StatelessWidget {
+class UpdateNoteDialog extends StatefulWidget {
   final int index;
   final NoteController controller;
 
@@ -15,36 +16,68 @@ class UpdateNoteDialog extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final editCtrl = TextEditingController(text: controller.items[index].text);
+  State<UpdateNoteDialog> createState() => _UpdateNoteDialogState();
+}
 
+class _UpdateNoteDialogState extends State<UpdateNoteDialog> {
+  late TextEditingController editCtrl;
+  late int selectedColorIndex;
+  final AppColors appColors = AppColors();
+
+  @override
+  void initState() {
+    super.initState();
+    final note = widget.controller.items[widget.index];
+    editCtrl = TextEditingController(text: note.text);
+    selectedColorIndex = note.colorIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color(0xFFF0EAD2),
-      title: Text("Edit Note", style: GoogleFonts.robotoSlab(fontSize: 18.sp)),
-      content: TextField(
-        controller: editCtrl,
-        maxLines: 3,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white70,
-          hintText: "Update your thought...",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.r),
-            borderSide: BorderSide.none,
-          ),
+      title: Text(
+        "Notu Düzenle",
+        style: GoogleFonts.robotoSlab(fontSize: 18.sp),
+      ),
+      content: SizedBox(
+        height: 200.h,
+        width: 300.w,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: editCtrl,
+              maxLines: 6, // 3'ten 6'ya çıkarıldı, daha uzun bir alan için
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white70,
+                hintText: "Notunu güncelle...",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.r),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: GoogleFonts.robotoMono(fontSize: 15.sp),
+            ),
+            SizedBox(height: 16.h),
+          ],
         ),
-        style: GoogleFonts.robotoMono(fontSize: 15.sp),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text("Cancel", style: TextStyle(fontSize: 15.sp)),
+          child: Text("İptal", style: TextStyle(fontSize: 15.sp)),
         ),
         ElevatedButton(
           onPressed: () {
             final newText = editCtrl.text.trim();
             if (newText.isNotEmpty) {
-              controller.updateItem(index, newText);
+              widget.controller.updateItem(
+                widget.index,
+                newText,
+                selectedColorIndex,
+              );
               Navigator.pop(context);
             }
           },
@@ -52,7 +85,7 @@ class UpdateNoteDialog extends StatelessWidget {
             backgroundColor: Colors.teal,
             foregroundColor: Colors.white,
           ),
-          child: Text("Save", style: TextStyle(fontSize: 15.sp)),
+          child: Text("Kaydet", style: TextStyle(fontSize: 15.sp)),
         ),
       ],
     );

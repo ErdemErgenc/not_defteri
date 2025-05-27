@@ -26,7 +26,8 @@ class NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final note = controller.items[index];
-    final color = appColors.cardColors[index % appColors.cardColors.length];
+    final color =
+        appColors.cardColors[note.colorIndex % appColors.cardColors.length];
 
     final dateText = DateFormat(
       'dd MMMM yyyy, HH:mm',
@@ -80,6 +81,18 @@ class NoteCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 6.h),
+
+              IconButton(
+                icon: Icon(
+                  Icons.color_lens,
+                  color: Colors.black54,
+                  size: 20.sp,
+                ),
+                onPressed: () {
+                  showColorGridMenu(context, index);
+                },
+              ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -142,6 +155,16 @@ class NoteCard extends StatelessWidget {
               spacing: 8.w,
               children: [
                 IconButton(
+                  icon: Icon(
+                    Icons.color_lens,
+                    color: Colors.black54,
+                    size: 20.sp,
+                  ),
+                  onPressed: () {
+                    showColorGridMenu(context, index);
+                  },
+                ),
+                IconButton(
                   icon: Icon(Icons.edit, color: Colors.black54, size: 22.sp),
                   onPressed: onEdit,
                 ),
@@ -169,4 +192,48 @@ class NoteCard extends StatelessWidget {
       child: Icon(Icons.delete, color: Colors.white, size: 26.sp),
     );
   }
+
+  void showColorGridMenu(BuildContext context, int noteIndex) {
+    final AppColors appColors = AppColors();
+    final NoteController controller = Get.find();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Select Color'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              itemCount: appColors.cardColors.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 5, // 5 renk yatayda
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1,
+              ),
+              itemBuilder: (context, colorIndex) {
+                final color = appColors.cardColors[colorIndex];
+                return GestureDetector(
+                  onTap: () {
+                    controller.updateItemColor(noteIndex, colorIndex);
+                    Navigator.of(context).pop(); // dialogu kapat
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.black26),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }
