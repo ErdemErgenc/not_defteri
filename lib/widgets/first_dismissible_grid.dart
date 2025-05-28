@@ -32,30 +32,47 @@ class FirstDismissibleGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       key: Key(note.hashCode.toString()),
-      direction: DismissDirection.endToStart,
-      background: DismissBackground(),
+      direction: DismissDirection.horizontal,
+      background: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.h),
+        decoration: BoxDecoration(
+          color: Colors.green.shade400,
+          borderRadius: BorderRadius.circular(15.r),
+        ),
+        alignment: Alignment.centerLeft,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Icon(Icons.edit, color: Colors.white, size: 26.sp),
+      ),
+      secondaryBackground: DismissBackground(),
       confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder:
-              (context) => AlertDialog(
-                title: Text('Emin misiniz?'),
-                content: Text('Bu notu silmek istediğinize emin misiniz?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: Text('Vazgeç'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text('Sil'),
-                  ),
-                ],
-              ),
-        );
+        if (direction == DismissDirection.startToEnd) {
+          Get.to(UpdateNoteDialog(index: index, controller: controller));
+          return false;
+        } else {
+          return await showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: Text('Emin misiniz?'),
+                  content: Text('Bu notu silmek istediğinize emin misiniz?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('Vazgeç'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text('Sil'),
+                    ),
+                  ],
+                ),
+          );
+        }
       },
       onDismissed: (direction) {
-        controller.removeItem(index);
+        if (direction == DismissDirection.endToStart) {
+          controller.removeItem(index);
+        }
       },
       child: InkWell(
         onDoubleTap:
@@ -102,7 +119,6 @@ class FirstDismissibleGrid extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 6.h),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -116,9 +132,7 @@ class FirstDismissibleGrid extends StatelessWidget {
                       showColorGridMenu(context, index);
                     },
                   ),
-
                   SizedBox(width: 4.w),
-
                   IconButton(
                     icon: Icon(Icons.edit, color: Colors.black54, size: 20.sp),
                     onPressed: onEdit,
