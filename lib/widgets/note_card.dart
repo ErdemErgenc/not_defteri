@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:note_project1/widgets/color_grid_menu.dart';
+import 'package:note_project1/widgets/dismiss_background.dart';
 import 'package:note_project1/widgets/update_note_dialog.dart';
 import '../controller/note_controller.dart';
 import '../colors/colors.dart';
@@ -38,10 +39,32 @@ class NoteCard extends StatelessWidget {
 
     if (isGrid) {
       return Dismissible(
-        key: Key(note.text + index.toString()),
+        key: Key(note.hashCode.toString()),
         direction: DismissDirection.endToStart,
-        onDismissed: (direction) => onDelete(),
-        background: _buildDismissBackground(),
+        background: DismissBackground(),
+        confirmDismiss: (direction) async {
+          return await showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: Text('Emin misiniz?'),
+                  content: Text('Bu notu silmek istediğinize emin misiniz?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('Vazgeç'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text('Sil'),
+                    ),
+                  ],
+                ),
+          );
+        },
+        onDismissed: (direction) {
+          controller.removeItem(index);
+        },
         child: InkWell(
           onDoubleTap:
               () => Get.to(
@@ -133,10 +156,32 @@ class NoteCard extends StatelessWidget {
       );
     } else {
       return Dismissible(
-        key: Key(note.text + index.toString()),
+        key: Key(note.hashCode.toString()),
         direction: DismissDirection.endToStart,
-        onDismissed: (direction) => onDelete(),
-        background: _buildDismissBackground(),
+        background: DismissBackground(),
+        confirmDismiss: (direction) async {
+          return await showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: Text('Emin misiniz?'),
+                  content: Text('Bu notu silmek istediğinize emin misiniz?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text('Vazgeç'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Text('Sil'),
+                    ),
+                  ],
+                ),
+          );
+        },
+        onDismissed: (direction) {
+          controller.removeItem(index);
+        },
         child: InkWell(
           onDoubleTap:
               () => Get.to(
@@ -200,16 +245,5 @@ class NoteCard extends StatelessWidget {
     }
   }
 
-  Widget _buildDismissBackground() {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8.h),
-      decoration: BoxDecoration(
-        color: Colors.redAccent,
-        borderRadius: BorderRadius.circular(15.r),
-      ),
-      alignment: Alignment.centerRight,
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Icon(Icons.delete, color: Colors.white, size: 26.sp),
-    );
-  }
+  
 }
