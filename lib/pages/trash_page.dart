@@ -197,8 +197,34 @@ class TrashPage extends StatelessWidget {
                 SizedBox(width: 4.w),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
-                  onPressed: () {
-                    controller.deleteFromTrash(index);
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text("Emin misiniz?"),
+                            content: Text(
+                              "Bu notu kalıcı olarak silmek istiyor musunuz?",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: Text("Vazgeç"),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: Text("Sil"),
+                              ),
+                            ],
+                          ),
+                    );
+                    if (result == true) {
+                      controller.deleteFromTrash(index);
+                    }
                   },
                   padding: EdgeInsets.zero,
                   constraints: BoxConstraints(),
@@ -255,8 +281,34 @@ class TrashPage extends StatelessWidget {
               ),
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
-                onPressed: () {
-                  controller.deleteFromTrash(index);
+                onPressed: () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: Text("Emin misiniz?"),
+                          content: Text(
+                            "Bu notu kalıcı olarak silmek istiyor musunuz?",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text("Vazgeç"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text("Sil"),
+                            ),
+                          ],
+                        ),
+                  );
+                  if (result == true) {
+                    controller.deleteFromTrash(index);
+                  }
                 },
               ),
             ],
