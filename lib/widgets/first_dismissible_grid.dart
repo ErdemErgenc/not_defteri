@@ -7,7 +7,7 @@ import 'package:note_project1/widgets/update_note_dialog.dart';
 
 /// Liste görünümü için not kartı.
 /// Sola kaydırıldığında düzenleme, sağa kaydırıldığında silme işlemi sunar.
-class SecondDismissibleGrid extends StatelessWidget {
+class FirstDismissibleGrid extends StatelessWidget {
   final dynamic note;
   final int index;
   final dynamic controller;
@@ -17,7 +17,7 @@ class SecondDismissibleGrid extends StatelessWidget {
   final VoidCallback onDelete;
   final Function(BuildContext, int) showColorGridMenu;
 
-  const SecondDismissibleGrid({
+  const FirstDismissibleGrid({
     super.key,
     required this.note,
     required this.index,

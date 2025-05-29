@@ -6,7 +6,7 @@ import 'package:note_project1/widgets/dismiss_background.dart';
 import 'package:note_project1/widgets/update_note_dialog.dart';
 
 /// Notların grid görünümündeki kartı. Sürüklenerek silinebilir, düzenlenebilir ve renk değiştirilebilir.
-class FirstDismissibleGrid extends StatelessWidget {
+class SecondDismissibleGrid extends StatelessWidget {
   final dynamic note;
   final int index;
   final dynamic controller;
@@ -16,7 +16,7 @@ class FirstDismissibleGrid extends StatelessWidget {
   final VoidCallback onDelete;
   final Function(BuildContext, int) showColorGridMenu;
 
-  const FirstDismissibleGrid({
+  const SecondDismissibleGrid({
     super.key,
     required this.note,
     required this.index,
