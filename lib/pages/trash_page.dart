@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:note_project1/controller/note_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:note_project1/colors/colors.dart'; // Eklemeyi unutma!
+import 'package:rive/rive.dart';
+
+import 'package:note_project1/controller/note_controller.dart';
+import 'package:note_project1/colors/colors.dart';
+import 'package:note_project1/widgets/first_dismissible_grid.dart';
+import 'package:note_project1/widgets/second_dismissible_grid.dart';
 
 class TrashPage extends StatelessWidget {
+  TrashPage({super.key});
+
   final NoteController controller = Get.find<NoteController>();
   final RxBool isGrid = false.obs;
-  final AppColors appColors = AppColors(); // EKLE
-
-  TrashPage({super.key});
+  final AppColors appColors = AppColors();
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,7 @@ class TrashPage extends StatelessWidget {
         elevation: 2,
         centerTitle: true,
         actions: [
+          // Görünüm tipi değiştir (Grid / Liste)
           Obx(
             () => IconButton(
               icon: Icon(
@@ -38,283 +43,237 @@ class TrashPage extends StatelessWidget {
                 size: 28.sp,
               ),
               tooltip: "Görünümü Değiştir",
-              onPressed: () => isGrid.value = !isGrid.value,
+              onPressed: () => isGrid.toggle(),
             ),
           ),
+
+          // Tümünü kalıcı sil butonu
           IconButton(
-            icon: Icon(
-              size: 32.sp,
-              Icons.delete_forever,
-              color: const Color.fromARGB(255, 230, 0, 0), // Kırmızı renk
-            ),
+            icon: Icon(Icons.delete_forever, color: Colors.red, size: 32.sp),
             tooltip: "Tümünü Kalıcı Sil",
             onPressed: () {
-              if (controller.trash.isNotEmpty) {
-                showDialog(
-                  context: context,
-                  builder:
-                      (_) => AlertDialog(
-                        backgroundColor: const Color(0xFFF0EAD2),
-                        title: const Text("Çöp Kutusunu Temizle"),
-                        content: const Text(
-                          "Tüm notları kalıcı olarak silmek istediğinize emin misiniz?",
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              "Vazgeç",
-                              style: TextStyle(color: Colors.brown),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              controller.clearTrash();
-                              Navigator.pop(context);
-                              Get.snackbar(
-                                "Çöp Kutusu",
-                                "Tüm notlar kalıcı olarak silindi",
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text("Evet"),
-                          ),
-                        ],
+              if (controller.trash.isEmpty) return;
+              showDialog(
+                context: context,
+                builder:
+                    (_) => AlertDialog(
+                      backgroundColor: const Color(0xFFF0EAD2),
+                      title: const Text("Çöp Kutusunu Temizle"),
+                      content: const Text(
+                        "Tüm notları kalıcı olarak silmek istediğinize emin misiniz?",
                       ),
-                );
-              }
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            "Vazgeç",
+                            style: TextStyle(color: Colors.brown),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: () {
+                            controller.clearTrash();
+                            Navigator.pop(context);
+                            Get.snackbar(
+                              "Çöp Kutusu",
+                              "Tüm notlar kalıcı olarak silindi",
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          },
+                          child: const Text("Evet"),
+                        ),
+                      ],
+                    ),
+              );
             },
           ),
         ],
         iconTheme: const IconThemeData(color: Color(0xFF5E503F)),
       ),
       body: Obx(() {
+        // Çöp kutusu boşsa bilgilendirme mesajı ve animasyon göster
         if (controller.trash.isEmpty) {
           return Center(
-            child: Text(
-              "Çöp kutusu boş.",
-              style: GoogleFonts.specialElite(
-                fontSize: 18.sp,
-                color: Colors.grey[700],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 300.w,
+                  height: 300.w,
+                  child: const RiveAnimation.asset(
+                    'lib/rive/trash_can.riv',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                Text(
+                  "Çöp kutusu boş.",
+                  style: GoogleFonts.specialElite(
+                    fontSize: 26.sp,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Grid veya Liste görünümüne göre widget döndür
+        return isGrid.value
+            ? GridView.builder(
+              padding: EdgeInsets.all(16.w),
+              itemCount: controller.trash.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 14.w,
+                mainAxisSpacing: 14.h,
+                childAspectRatio: 0.85,
               ),
-            ),
-          );
-        }
-        if (isGrid.value) {
-          return GridView.builder(
-            padding: EdgeInsets.all(16.w),
-            itemCount: controller.trash.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 14.w,
-              mainAxisSpacing: 14.h,
-              childAspectRatio: 0.85,
-            ),
-            itemBuilder: (ctx, i) => _buildTrashCard(ctx, i, true),
-          );
-        } else {
-          return ListView.builder(
-            padding: EdgeInsets.all(16.w),
-            itemCount: controller.trash.length,
-            itemBuilder: (ctx, i) => _buildTrashCard(ctx, i, false),
-          );
-        }
+              itemBuilder: (ctx, i) => _buildTrashCard(context, i, true),
+            )
+            : ListView.builder(
+              padding: EdgeInsets.all(16.w),
+              itemCount: controller.trash.length,
+              itemBuilder: (ctx, i) => _buildTrashCard(context, i, false),
+            );
       }),
     );
   }
 
-  Widget _buildTrashCard(BuildContext context, int index, bool isGrid) {
+  /// Her bir çöp kutusu kartı (Grid ya da Liste görünümüne göre)
+  Widget _buildTrashCard(BuildContext context, int index, bool isGridView) {
     final note = controller.trash[index];
     final color =
         appColors.cardColors[(note.colorIndex ?? 0) %
             appColors.cardColors.length];
-    // EKLE
 
-    if (isGrid) {
-      return Container(
-        margin: EdgeInsets.symmetric(vertical: 8.h),
-        padding: EdgeInsets.all(12.w),
-        decoration: BoxDecoration(
-          color: color, // Burada kullan
-          borderRadius: BorderRadius.circular(15.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.brown.withOpacity(0.08),
-              blurRadius: 6,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  note.text,
-                  style: GoogleFonts.cabin(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.brown[800],
-                  ),
-                  maxLines: 5,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
-              style: GoogleFonts.robotoMono(
-                fontSize: 12.sp,
-                color: Color(0xFF7D7461),
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(height: 6.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.restore, color: Colors.green, size: 20.sp),
-                  onPressed: () {
-                    controller.restoreFromTrash(index);
-                    Get.snackbar(
-                      "Geri Yüklendi",
-                      "Not geri alındı",
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  splashRadius: 18.r,
-                ),
-                SizedBox(width: 4.w),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red, size: 20.sp),
-                  onPressed: () async {
-                    final result = await showDialog<bool>(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: Text("Emin misiniz?"),
-                            content: Text(
-                              "Bu notu kalıcı olarak silmek istiyor musunuz?",
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: Text("Vazgeç"),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.redAccent,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: Text("Sil"),
-                              ),
-                            ],
-                          ),
-                    );
-                    if (result == true) {
-                      controller.deleteFromTrash(index);
-                    }
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  splashRadius: 18.r,
-                ),
-              ],
-            ),
-          ],
-        ),
+    if (isGridView) {
+      return FirstDismissibleGrid(
+        note: note,
+        index: index,
+        controller: controller,
+        color: color,
+        dateText: DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
+        onEdit: () {}, // Çöp kutusunda düzenleme genelde olmaz, istersen ekle
+        onDelete: () => _confirmDelete(context, index),
+        showColorGridMenu: (ctx, idx) {},
       );
     } else {
-      // Liste görünümü
-      return Card(
-        color: color, // Burada kullan
-        margin: EdgeInsets.symmetric(vertical: 8.h),
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.r),
-        ),
-        child: ListTile(
-          contentPadding: EdgeInsets.all(16.w),
-          title: Text(
-            note.text,
-            style: GoogleFonts.cabin(
-              fontSize: 16.sp,
-              color: Color(0xFF7D7461),
-              fontWeight: FontWeight.w900,
+      return SecondDismissibleGrid(
+        note: note,
+        index: index,
+        controller: controller,
+        color: color,
+        dateText: DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
+        onEdit: () {}, // Çöp kutusunda düzenleme genelde olmaz
+        onDelete: () => _confirmDelete(context, index),
+        showColorGridMenu: (ctx, idx) {},
+      );
+    }
+  }
+
+  /// Kart içinde kullanılan aksiyon butonu (geri al / sil)
+  Widget _actionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return IconButton(
+      icon: Icon(icon, color: color, size: 20.sp),
+      onPressed: onTap,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      splashRadius: 18.r,
+    );
+  }
+
+  /// Kalıcı silme onayı diyalogu
+  Future<void> _confirmDelete(BuildContext context, int index) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Emin misiniz?"),
+            content: const Text(
+              "Bu notu kalıcı olarak silmek istiyor musunuz?",
             ),
-          ),
-          subtitle: Padding(
-            padding: EdgeInsets.only(top: 8.h),
-            child: Text(
-              DateFormat('dd MMMM yyyy, HH:mm', 'tr_TR').format(note.date),
-              style: GoogleFonts.robotoMono(
-                fontSize: 13.sp,
-                color: Color(0xFF7D7461),
-                fontWeight: FontWeight.w900,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Vazgeç"),
               ),
-            ),
-          ),
-          trailing: Wrap(
-            spacing: 8.w,
-            children: [
-              IconButton(
-                icon: Icon(Icons.restore, color: Colors.green, size: 22.sp),
-                onPressed: () {
-                  controller.restoreFromTrash(index);
-                  Get.snackbar(
-                    "Geri Yüklendi",
-                    "Not geri alındı",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
-                onPressed: () async {
-                  final result = await showDialog<bool>(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: Text("Emin misiniz?"),
-                          content: Text(
-                            "Bu notu kalıcı olarak silmek istiyor musunuz?",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: Text("Vazgeç"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.redAccent,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text("Sil"),
-                            ),
-                          ],
-                        ),
-                  );
-                  if (result == true) {
-                    controller.deleteFromTrash(index);
-                  }
-                },
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Sil"),
               ),
             ],
           ),
-        ),
+    );
+
+    Future<bool?> confirmRestore(BuildContext context) {
+      return showDialog<bool>(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text("Emin misiniz?"),
+              content: const Text(
+                "Bu notu geri almak istediğinize emin misiniz?",
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text("Vazgeç"),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text("Geri Al"),
+                ),
+              ],
+            ),
       );
     }
+
+    if (result == true) {
+      controller.deleteFromTrash(index);
+    }
+  }
+
+  Future<bool?> _confirmRestore(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Emin misiniz?"),
+            content: const Text(
+              "Bu notu geri almak istediğinize emin misiniz?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Vazgeç"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Geri Al"),
+              ),
+            ],
+          ),
+    );
   }
 }

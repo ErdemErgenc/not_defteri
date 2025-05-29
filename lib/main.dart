@@ -6,11 +6,15 @@ import 'package:note_project1/note_home/note_home.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:note_project1/pages/splash_page.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await GetStorage.init(); // Bunu ekle!
-  await initializeDateFormatting('tr_TR', null); // Türkçe locale'ı yükle
-  runApp(const MyApp());
+/// Uygulamanın giriş noktası
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutter bağlamını başlat
+  await GetStorage.init(); // Kalıcı veri depolama için GetStorage'ı başlat
+  await initializeDateFormatting(
+    'tr_TR',
+    null,
+  ); // Türkçe tarih formatlarını yükle
+  runApp(const MyApp()); // Uygulamayı başlat
 }
 
 class MyApp extends StatelessWidget {
@@ -19,14 +23,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(411, 915),
-      minTextAdapt: true,
-      splitScreenMode: true,
+      designSize: const Size(411, 915), // Tasarım için temel ekran boyutu (px)
+      minTextAdapt:
+          true, // Metin boyutunun ekran boyutuna uyum sağlamasını sağlar
+      splitScreenMode: true, // Split screen desteği için
       builder: (context, child) {
         return GetMaterialApp(
-          debugShowCheckedModeBanner: false,
+          debugShowCheckedModeBanner: false, // Sağ üstteki debug banner'ı gizle
           title: 'Note App',
-
+          // İlk açılan sayfa (SplashPage)
           home: SplashPage(),
         );
       },

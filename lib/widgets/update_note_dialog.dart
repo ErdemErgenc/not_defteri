@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:note_project1/colors/colors.dart';
 import '../controller/note_controller.dart';
 
+/// Not düzenleme işlemi için açılan dialog.
+/// Kullanıcı notu buradan güncelleyebilir.
 class UpdateNoteDialog extends StatefulWidget {
   final int index;
   final NoteController controller;
@@ -21,12 +23,13 @@ class UpdateNoteDialog extends StatefulWidget {
 
 class _UpdateNoteDialogState extends State<UpdateNoteDialog> {
   late TextEditingController editCtrl;
-  late int selectedColorIndex;
+  late int selectedColorIndex; // Renk seçimi (şimdilik dışarıdan ayarlanabilir)
   final AppColors appColors = AppColors();
 
   @override
   void initState() {
     super.initState();
+    // Düzenlenecek notu al, text ve renk indexini başlat
     final note = widget.controller.items[widget.index];
     editCtrl = TextEditingController(text: note.text);
     selectedColorIndex = note.colorIndex;
@@ -35,7 +38,7 @@ class _UpdateNoteDialogState extends State<UpdateNoteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFFF0EAD2),
+      backgroundColor: const Color(0xFFF0EAD2), // Açık retro bej arka plan
       title: Text(
         "Notu Düzenle",
         style: GoogleFonts.robotoSlab(fontSize: 18.sp),
@@ -46,9 +49,10 @@ class _UpdateNoteDialogState extends State<UpdateNoteDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Not metnini düzenleme alanı
             TextField(
               controller: editCtrl,
-              maxLines: 6, // 3'ten 6'ya çıkarıldı, daha uzun bir alan için
+              maxLines: 6, // Daha uzun metinler için
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white70,
@@ -61,14 +65,17 @@ class _UpdateNoteDialogState extends State<UpdateNoteDialog> {
               style: GoogleFonts.robotoMono(fontSize: 15.sp),
             ),
             SizedBox(height: 16.h),
+            // İstersen buraya renk seçim widget'ı eklenebilir.
           ],
         ),
       ),
       actions: [
+        // İptal butonu
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text("İptal", style: TextStyle(fontSize: 15.sp)),
         ),
+        // Kaydet butonu
         ElevatedButton(
           onPressed: () {
             final newText = editCtrl.text.trim();
