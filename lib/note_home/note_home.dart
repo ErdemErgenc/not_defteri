@@ -151,11 +151,8 @@ class NoteHome extends StatelessWidget {
                       width: 320.w,
                       height: 320.w,
                       child: const RiveAnimation.asset(
-                        'lib/rive/notebook_loading_animation.riv',
+                        'lib/rive/downloading_book.riv',
                         fit: BoxFit.contain,
-                        animations: [
-                          'Loading',
-                        ], // Animasyon adını Rive dosyasından kontrol et!
                       ),
                     ),
                     SizedBox(height: 24.h),
